@@ -1,0 +1,78 @@
+{% extends 'deepcoloring/base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>::Deep Coloring:: by ORIJANG</title>
+
+    <link href="{% static 'css/colorized.css' %}" rel="stylesheet">
+
+    <style>
+      @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css);
+      @import url('https://fonts.googleapis.com/css?family=Sacramento');
+       .jejugothic30 {
+         font-size: 50px; 
+         font-family: 'Jeju Gothic', sans-serif;
+       }
+       .bubblegum4 { 
+         z-index: 1;
+         color: hsl(357, 85%, 80%);
+         text-align: center;
+         font-size: 50px; 
+         font-family: 'Sacramento', cursive;
+         letter-spacing: -1px;
+       }
+       
+       /* Set the psuedoelement beneath parent */
+       .bubblegum ::after {
+         z-index: -1;
+         content: attr(data-content);
+         -webkit-text-stroke: 10px hsl(357, 80%, 75%);
+       }
+    </style>
+
+
+</head>
+<body>
+  <div style="background-image: url('https://image.freepik.com/free-photo/blurred-background-purple-festive-light-abstract-bokeh-background-banner_7190-1117.jpg');background-repeat: no-repeat; background-position: center; background-size: 100%;">
+    <br><br><br><br><br>
+    <div>
+      <h1 class="bubblegum4"><strong>Colorized Pictures Result</strong></h1>
+    {% for img in colorized_img %}
+        <!-- <img src='{{ img }}' alt="사진이 없네?">    
+        <a href="{{img}}" download><button>
+            download
+        </button></a> -->
+
+        <div class="container2">
+            <h3 class="title">Result Picture</h3>
+            <div class="content2">
+                <a href="{{img}}" download>
+                <div class="content2-overlay"></div>
+                <img class="content2-image" src="{{ img }}" alt="ResultPictures">
+                <div class="content2-details fadeIn-bottom">
+                  <h3 class="content2-title">Download</h3>
+                  <p class="jejugothic30">사진을 다운받으려면 <strong>여기</strong>를 클릭하세요</p>
+                  <form action="{% url 'filterON' %}", method='post'>
+                    {% csrf_token %}
+                    <input type="hidden" value = '{{img}}' name="removed">
+                    <button type="submit" class="btn btn-secondary btn-xl js-scroll-trigger jejugothic" > 채색하러 가기 </button>
+                  </form>
+                </div>
+              </a>
+            </div>
+          </div>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+
+<!-- Coloring.html JavaScript -->
+<script src="{% static 'js/colors.js' %}"></script>
+<br><br>
+
+{% endblock %}
+</html>

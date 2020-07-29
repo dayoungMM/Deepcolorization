@@ -1,0 +1,138 @@
+{% extends 'deepcoloring/base.html' %}
+{% block content %}
+{% load static %}
+
+<link href="{% static 'css/fileupload.css' %}" rel="stylesheet">
+<link href="{% static 'css/colors.css' %}" rel="stylesheet">
+
+<style>
+  @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css);
+  @import url('https://fonts.googleapis.com/css?family=Sacramento');
+    .jejugothic {
+      font-size: 20px; 
+      font-family: 'Jeju Gothic', sans-serif;
+    }
+    .bubblegum { 
+      z-index: 1;
+      color: hsl(357, 85%, 80%);
+      text-align: center;
+      font-size: 150px; 
+      font-family: 'Sacramento', cursive;
+      letter-spacing: -1px;
+    }
+    
+    /* Set the psuedoelement beneath parent */
+    .bubblegum ::after {
+      z-index: -1;
+      content: attr(data-content);
+      -webkit-text-stroke: 10px hsl(357, 80%, 75%);
+    }
+</style>
+
+  <div style="background-image: url('https://image.freepik.com/free-photo/blurred-background-purple-festive-light-abstract-bokeh-background-banner_7190-1117.jpg');background-repeat: no-repeat; background-position: center; background-size: 100%;">
+    <div class="container text-center my-auto" >
+      <br><br><br><br><br>
+      <h1 class="bubblegum">Filter On</h1>
+
+
+      <form action="{% url 'filterON' %}" method="POST" id='Clicks' enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="left">
+          <br><br>
+          
+            <h3 class="mb-4"> <strong>Step1 : </strong>Choose File </h3>
+            <hr>
+              <p class="jejugothic" style="color: palevioletred;">
+                필터를 적용할 파일을 선택하세요.
+              </p>
+          <div class="btn btn-outline-gray btn-lg waves-effect waves-light">
+            <span> <p class="jejugothic"> 필터를 적용할 파일 선택</p></span>
+              <p class="file">
+                <input type="file" id="baseFile" accept="image/*" value = ''>
+                <label for="file">Choose File</label>
+              </p>
+            <i class="fa fa-arrow-up"></i>
+          </div>
+          <br><br><br>
+
+          <div class="overlay">
+            <div class="file-path-wrapper">
+              <img id="miribogi" src="{{removed}}" alt="miribogi your image" style="max-width:35%;" />
+              <input id="realdata" type="hidden" value = "{{removed}}" name = "pal_img">
+            </div>
+            <br>
+          </div>
+        </div>
+
+      <br><br>
+
+        <div class="right" >
+          <div class="w3-col l4 m12" style="text-align:center;">
+            <h3 class="mb-4"> <strong>Step2 : </strong>Color Me!</h3>
+            <hr>
+              <p class="jejugothic" style="color: palevioletred;">
+                컬러를 선택하고 색을 입히고 싶은 사진의 위치를 지정하세요.
+              </p>
+            <br>
+                <div id="html5DIV">
+                  <input type="color" name="html5colorpicker" id="customcolor" value="#ff0000" style="width:85%;">
+                </div>
+            <br><br>        
+          </div>
+      
+          <div class="thumbnail">
+              <p class="jejugothic">▼ ▼ ▼ 아래 사진을 클릭하세요 ▼ ▼ ▼</p>
+              <canvas id="cs" style = "width : 100%; cursor:crosshair;"></canvas>
+              <hr>
+          </div>
+        
+        </div>
+      <br><br><br><br><br><br><br><br><br><br><br><br>
+        <div>
+          <button type="submit" id="graytocolor" class="btn btn-secondary btn-xl js-scroll-trigger jejugothic "> 완료하기 (컬러 필터 씌우기) </button>
+          <input type="hidden" id='xy_str' name='xy_str'>
+      </form>
+          <button type="button" id="goback" class="btn btn-warning btn-xl js-scroll-trigger jejugothic button3">  되돌리기 </button>
+        </div>
+    </div>
+    <br><br>
+    
+
+
+    <style>
+      div.left {
+        width: 50%;
+        float: left;
+        box-sizing: border-box;
+        
+      }
+      div.right {
+        width: 50%;
+        float: right;
+        box-sizing: border-box;
+        
+      }
+      </style>
+<!-- Coloring.html JavaScript -->
+<script src="{% static 'js/colors.js' %}"></script>
+<br><br><br><br><br>
+
+<!--Footer-->
+<br><br>
+<footer >
+  <hr class="my-4">
+  <!--Copyright-->
+  <div class="footer-copyright text-center py-3">
+    © 2020 Copyright:
+    <a> finalori </a>
+  </div>
+  <!--/.Copyright-->
+</footer>
+<!--/.Footer-->
+</div>
+
+ <!-- JQuery -->
+ <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+
+
+{% endblock %}

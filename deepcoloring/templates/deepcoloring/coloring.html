@@ -1,0 +1,140 @@
+{% extends 'deepcoloring/base.html' %}
+{% block content %}
+{% load static %}
+
+<link href="{% static 'css/fileupload.css' %}" rel="stylesheet">
+<link href="{% static 'css/colors.css' %}" rel="stylesheet">
+
+<style>
+  @import url(//fonts.googleapis.com/earlyaccess/jejugothic.css);
+  @import url('https://fonts.googleapis.com/css?family=Sacramento');
+   .jejugothic {
+     font-size: 20px; 
+     font-family: 'Jeju Gothic', sans-serif;
+   }
+   .bubblegum { 
+     z-index: 1;
+     color: hsl(357, 85%, 80%);
+     text-align: center;
+     font-size: 150px; 
+     font-family: 'Sacramento', cursive;
+     letter-spacing: -1px;
+   }
+   
+   /* Set the psuedoelement beneath parent */
+   .bubblegum ::after {
+     z-index: -1;
+     content: attr(data-content);
+     -webkit-text-stroke: 10px hsl(357, 80%, 75%);
+   }
+</style>
+
+
+<div style="background-image: url('https://image.freepik.com/free-photo/blurred-background-purple-festive-light-abstract-bokeh-background-banner_7190-1117.jpg');background-repeat: no-repeat; background-position: center; background-size: 100%;">
+  <div class="container text-center my-auto" >
+    <br><br><br><br><br>
+      <h1 class="bubblegum"><strong>Remove Filter</strong></h1>
+
+      <form action="{% url 'coloring' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+        <br><br>
+          
+          <h3 class="mb-4"> <strong>Step1 : </strong>Choose File </h3>
+          <hr>
+            <p class="jejugothic" style="color: palevioletred;">
+              필터를 제거할 사진을 선택해주세요
+            </p>
+      
+          <div class="btn btn-outline-gray btn-lg waves-effect waves-light">
+            <span> <p class="jejugothic"> 필터를 제거할 사진 선택</p></span>
+              <p class="file">
+                <input type="file" name="uploaded_img" id="baseFile" accept="image/*" value = ''>
+                <label for="file">Choose File</label>
+              </p>
+              <i class="fa fa-arrow-up"></i>
+          </div>
+          <br><br><br>
+          
+          <div class="file-path-wrapper">
+            <img id="miribogi" src="https://elitediscovery.com/wp-content/uploads/upload-1.png" alt="miribogi your image" style="max-width:35%;" />
+          </div>
+        <br><br>
+        <button type="submit" class="btn btn-secondary btn-xl js-scroll-trigger jejugothic" > 완료하기 (필터 제거하기) </button>
+    </form>
+  </div>
+  <br><br><br><br><br><br><br><br>
+</div>
+
+
+
+
+
+  <!-- JQuery -->
+  <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+  <script type="text/javascript">
+    var file = document.querySelector('#baseFile');
+    var result;
+    // 정상 로드시 result에 인코딩 값을 저장하기
+    var reader = new FileReader(file);
+    reader.onload = function() {
+      result = reader.result;
+    }
+    // 실패할 경우 에러 출력하기
+    reader.onerror = function (error) {
+      console.log('Error');
+    };
+  </script>
+  <script>
+  //base64로 변환해서 반환
+  function readImage(input) {
+    if ( input.files && input.files[0] ) {
+      var FR= new FileReader();
+      FR.onload = function(e) {
+        $('#miribogi').attr( "src", e.target.result );
+        $('#source').text( e.target.result );
+      };       
+      FR.readAsDataURL( input.files[0] );
+    }
+  }
+  // 변환 링크 == e.target.result
+  $(document).ready(function(){
+    $("#baseFile").change(function(){
+      readImage( this );
+    });
+    $("#baseFile").trigger("change");
+  });
+  </script>
+  
+  
+  <!-- SCRIPTS -->
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+  <!-- Initializations -->
+  <script type="text/javascript">
+    // Animations initialization
+    new WOW().init();
+
+  </script>
+</body>
+
+  <!--Footer-->
+  <br><br>
+  <footer >
+    <hr class="my-4">
+    <!--Copyright-->
+    <div class="footer-copyright text-center py-3">
+      © 2020 Copyright:
+      <a> finalori </a>
+    </div>
+    <!--/.Copyright-->
+  </footer>
+  <!--/.Footer-->
+</html>
+
+
+
+{% endblock %}

@@ -1,0 +1,50 @@
+/* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
+html,
+body,
+.view {
+  height: 100%; }
+
+body.busy-cursor {
+  cursor: wait;
+}
+
+/* Half Page Carousel itself*/
+.carousel {
+  height: 50%; }
+  .carousel .carousel-inner {
+    height: 100%; }
+    .carousel .carousel-inner .carousel-item,
+    .carousel .carousel-inner .active {
+      height: 100%; }
+
+/* Adjustment for mobile devices*/
+@media (max-width: 776px) {
+  .carousel {
+    height: 100%; } }
+
+/* Navbar animation */
+.navbar {
+  background-color: rgba(0, 0, 0, 0.2); }
+
+.top-nav-collapse {
+  background-color: rgb(221, 152, 204); }
+
+/* Adding color to the Navbar on mobile */
+@media only screen and (max-width: 768px) {
+  .navbar {
+    background-color: rgb(216, 153, 216); } }
+
+/* Footer color for sake of consistency with Navbar */
+.page-footer {
+  background-color: rgb(241, 170, 238); }
+
+
+  .file-field.medium .file-path-wrapper {
+    height: 3rem; }
+    .file-field.medium .file-path-wrapper .file-path {
+    height: 2.8rem; }
+    
+    .file-field.big-2 .file-path-wrapper {
+    height: 3.7rem; }
+    .file-field.big-2 .file-path-wrapper .file-path {
+    height: 3.5rem; }

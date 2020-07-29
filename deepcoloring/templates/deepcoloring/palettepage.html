@@ -1,0 +1,544 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="Description" content="Generates a color palette from an image using k-means clustering.">
+    <title>Color Palette Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css?family=Text+Me+One" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            font-family: 'Text Me One', sans-serif;
+
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        a {
+            color: rgb(29, 161, 242);
+        }
+
+        h1 {
+            font-size: 1em;
+        }
+
+        h2 {
+            font-size: 1.2em;
+        }
+
+        input {
+            font-size: 1em;
+        }
+
+        canvas {
+            display: none;
+        }
+        .palette > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.6em;
+            padding: 1em 0.5em;
+            flex-grow: 1;
+            line-height: 1.5;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .palette {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .palettes {
+            display: flex;
+            height: 20vh;
+            width: 100%;
+            flex-grow: 1;
+            flex-direction: row;
+        }
+
+        .palette>div {
+            width: 20%;
+        }
+
+        .controls {
+            margin: 10px;
+            font-weight: bold;
+        }
+
+        .backgroundImage {
+            width: 100vw;
+            height: 74vh;
+            top: 0;
+            z-index: -1;
+            object-fit: cover;
+        }
+
+        .button {
+            display: inline-block;
+            border: none;
+            margin: 0;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font: inherit;
+            outline: inherit;
+            background: hsl(16, 100%, 50%);
+            color: white;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            padding: 0.5em;
+            min-width: 100px;
+        }
+
+        .button:hover,
+        .button:focus {
+            background: hsl(16, 100%, 40%);
+        }
+
+        .floatingButton {
+            padding: 0;
+            min-width: 0;
+            text-transform: lowercase;
+            width: 50px;
+            height: 50px;
+            font-size: 2.5em;
+            font-weight: bold;
+            position: fixed;
+
+        }
+
+        .showInformationButton {
+            bottom: 20px;
+            right: 0;
+        }
+
+        .saveButton {
+            bottom: 90px;
+            right: 0;
+            transition: transform 300ms;
+        }
+
+        .slideOut {           
+            transform: translateX(50px);
+        }
+
+
+        .hideInformationButton {
+            top: -25px;
+            position: absolute;
+            left: 110px;
+
+        }
+
+        .overlayCloseButton {
+            text-transform: uppercase;
+            font-size: 2.2em;
+        }
+
+        .loadingAnimation {
+            min-width: 50vh;
+            height: 20vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            width: 50%;
+            justify-content: center;
+        }
+
+        .cube {
+            width: 25px;
+            height: 25px;
+            background: hsl(16, 100%, 50%);
+            margin: 10px;
+        }
+
+        .cube:nth-child(even) {
+            animation: cubeUp 400ms ease-in-out 0ms infinite;
+        }
+
+        .cube:nth-child(odd) {
+            animation: cubeDown 400ms ease-in-out 0ms infinite;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 6vh;
+        }
+
+        .title {
+            flex-grow: 1;
+            margin: 0 1em;
+            font-weight: bold;
+            align-items: center;
+            display: flex;
+        }
+
+        .overlay {
+            visibility: hidden;
+            position: fixed;
+            background: black;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(29, 22, 20, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .showInformation .overlay {
+            visibility: visible;
+        }
+
+        .showUrlInput .overlay {
+            visibility: visible;
+        }
+
+        .informationOverlay {
+            position: absolute;
+            background: white;
+            width: 240px;
+            height: 380px;
+            padding: 15px;
+            font-size: 1.2em;
+            display: none;
+        }
+
+        .showInformation .informationOverlay {
+            display: block;
+        }
+
+        .imageUrlOverlay {
+            position: absolute;
+            background: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 10px;
+            flex-direction: row;
+        }
+
+        .hideImageUrlOverlayButton {
+            position: absolute;
+            top: -25px;
+        }
+
+        .imageUrlInputs {
+            font-size: 1.1em;
+        }
+
+        .imageUrlControls {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .showUrlInput .imageUrlOverlay {
+            display: flex;
+        }
+
+        input[type="checkbox"] {
+            display:none;
+        }
+
+        input[type="checkbox"] + label::before {
+            width: 1em;
+            height: 1em;
+            background-color: #fff;
+            display: block;
+            content: "";
+            float: left;
+            margin-right: 5px;
+            border: 2px solid hsl(16, 100%, 50%);
+        }
+
+        input[type="checkbox"]:checked+label::before {
+            box-shadow: inset 0px 0px 0px 3px #fff;
+            background-color: hsl(16, 100%, 50%);
+        }
+
+        @keyframes cubeUp {
+            from {
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(20px);
+            }
+
+
+            75% {
+                transform: translateY(-20px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cubeDown {
+            from {
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(-20px);
+            }
+
+
+            75% {
+                transform: translateY(20px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .imageUrlOverlay {
+                flex-direction: column;
+            }
+
+            .imageUrlControls {
+                margin-top: 10px;
+            }
+
+            .button {
+                min-width: 80px;
+            }
+
+            .floatingButton {
+                min-width: 0;
+            }
+
+            .showInformationButton {
+                bottom: 50px;
+                right: 0;
+            }
+
+            .saveButton {
+                bottom: 120px;
+                right: 0;
+            }
+
+            .palette {
+                flex-direction: column;
+                height: initial;
+            }
+
+            .palette>div {
+                width: initial;
+                height: initial;
+                padding: 5px;
+            }
+
+            .backgroundImage {
+                height: 45vh;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+            .header {
+                flex-direction: column;
+                height: 12vh;
+            }
+
+            .controls {
+                margin-bottom: 10px;
+                margin-top: 0;
+            }
+
+        }
+
+        .notificationsContainer {
+            position: fixed;
+            top: 1em;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .notification {
+            padding: 0.5em;
+            margin: 0.5em;
+            border: 0.2em solid hsl(16, 100%, 50%);
+            background-color: white;
+            color: hsl(16, 100%, 50%);
+            width: 60%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .savedPalettesOverlay {
+            position: fixed;
+            background: white;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .savedPalettesControls {
+            margin: 1em;
+            margin-bottom: 2em;
+        }
+
+        .savedColorPalettes {
+            margin-bottom: 1em;
+            padding: 0 1em;
+            height: 100%;
+            font-size: 1.2em;
+            max-width: 800px;
+            width: 84%;
+            overflow: scroll;
+        }
+
+        .savedColorPalettes > .palette {
+            flex-direction: row;
+            font-size: 1em;
+            /* border: 3px solid hsl(16, 100%, 50%); */
+            margin-bottom: 1em;
+            height: 50px;
+            box-sizing: border-box;
+        }
+
+        .savedColorPalettes > .palette > div {
+            /* width: 50px; */
+            /* height: 50px; */
+            padding: 0;
+            cursor: initial;
+        }
+
+        .savedColorPalettes > .palette > div > span {
+           display: none;
+           font-size: 0.8em;
+        }
+
+        @media (min-width: 600px) {
+            .savedColorPalettes > .palette > div > span {
+                display: initial;
+            }
+        }
+
+        .is-hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">
+            <h1>Color Palette Generator</h1>
+        </div>
+        <div class="controls">
+            <label for="imageUpload" class="button" >Upload</label>
+            <input type="file" id="imageUpload" name="imageUpload" accept="image/*">
+            <button id="randomImage" name="randomImage" class="button">Random</button>
+            <button id="urlImage" name="urlImage" class="button">Url</button>
+            <button id="showSavedPalettes" name="showSavedPalettes" class="button">Saved</button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <div class="backgroundImage is-hidden"></div>
+    <div class="palettes is-hidden"></div>
+    <div class="loadingAnimation is-hidden">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+    </div>
+    <div class="informationButtonContainer">
+        <button class="showInformationButton floatingButton button">i</button>
+        <button class="saveButton floatingButton button slideOut">+</button>
+    </div>
+    <div class="overlay"></div>
+    <div class="informationOverlay">
+        <h2>Color palette Generator</h2>
+        <p>Generates a color palette from an image using k-means clustering. Example images from <a
+                href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>.</p>
+        <p>Built by Emmanuel Meinike</p>
+        <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener">@kuukienator</a></p>
+        <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a>
+        </p>
+        <p>&#169 2019</p>
+        <input type="checkbox" name="vibrantMode" id="vibrantMode">
+        <label for="vibrantMode">Give me Vibrant colors</label>
+        <button class="floatingButton hideInformationButton overlayCloseButton button">X</button>
+    </div>
+    <div class="imageUrlOverlay">
+        <form id="urlImageForm">
+            <div class="imageUrlInputs">
+                <label for="imageUrlInput">Url:</label>
+                <input type="text" name="urlImageInput" id="imageUrlInput" autofocus>
+            </div>
+            <div class="imageUrlControls">
+                <button id="urlImageGo" name="urlImageGo" class="button" type="submit">Load</button>
+            </div>
+        </form>
+        <button class="floatingButton hideImageUrlOverlayButton overlayCloseButton button" id="urlImageCancel"
+            name="urlImageCancel">X</button>
+    </div>
+
+    <div class="notificationsContainer"></div>
+    <div class="savedPalettesOverlay is-hidden">
+        <h2>Saved color palettes</h2>
+        <div class="savedColorPalettes"></div>
+        <div class="savedPalettesControls">
+            <button id="closedSavedPalettes" name="closedSavedPalettes" class="button">Close</button>
+        </div>
+    </div>
+    <script src="{% static 'palettepage/libs/color.js' %}"></script>
+    <script type="module" src="{% static 'palettepage/app.js' %}"></script>
+    <script>
+        const showInformationButton = document.querySelector('.showInformationButton');
+        const hideInformationButton = document.querySelector('.hideInformationButton');
+        const overlay = document.querySelector('.overlay');
+
+        const eventHandler = event => {
+            event.stopPropagation();
+            document.body.classList.toggle('showInformation');
+        };
+
+        showInformationButton.addEventListener('click', eventHandler);
+        hideInformationButton.addEventListener('click', eventHandler);
+        overlay.addEventListener('click', () => {
+            document.body.classList.remove('showUrlInput');
+            document.body.classList.remove('showInformation');
+        });
+    </script>
+</body>
+
+</html>

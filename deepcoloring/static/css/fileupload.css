@@ -1,0 +1,61 @@
+
+.file {
+    position: relative;
+  }
+  .file label {
+    background: rgb(240, 87, 163);
+    padding: 5px 20px;
+    color: #fff;
+    font-weight: bold;
+    font-size: .9em;
+    transition: all .4s;
+  }
+  .file input {
+    position: absolute;
+    display: inline-block;
+    left: 0;
+    top: 0;
+    opacity: 0.01;
+    cursor: pointer;
+  }
+  .file input:hover + label,
+  .file input:focus + label {
+    background: rgb(99, 2, 70);
+    color: rgb(240, 87, 163);
+  }
+  
+  
+.above-fold {
+position: relative;
+height: 100vh;
+overflow: hidden;
+width: 100%;
+}
+.hero-section {	
+filter: grayscale(100%);
+-webkit-filter: grayscale(100%);
+z-index: -1;
+}
+.hero-section img {
+position: absolute;
+opacity: 0.45;
+margin: auto;
+width: 150%;
+top: -25%; 
+right: -25%; 
+bottom: -25%; 
+left: -25%;
+}
+
+p.photo-credit {
+position: fixed;
+color:#fff;
+bottom: 5px;
+right: 25px; 
+text-transform: uppercase;
+
+}
+p.photo-credit a {
+  text-decoration: none;
+color:#fff;
+}
